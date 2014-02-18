@@ -23,7 +23,10 @@
 
 namespace FlatFeeDelivery;
 
+use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Install\Database;
 use Thelia\Model\Country;
+use Thelia\Model\ModuleQuery;
 use Thelia\Module\BaseModule;
 use Thelia\Module\DeliveryModuleInterface;
 
@@ -34,6 +37,8 @@ use Thelia\Module\DeliveryModuleInterface;
  */
 class FlatFeeDelivery extends BaseModule implements DeliveryModuleInterface
 {
+
+    const STATUS_SENT=4;
     /**
      * calculate and return delivery price
      *
@@ -53,4 +58,14 @@ class FlatFeeDelivery extends BaseModule implements DeliveryModuleInterface
         return $postage === null ? 0:$postage;
     }
 
+    public static function getModCode() {
+        return ModuleQuery::create()->findOneByCode("FlatFeeDelivery")->getId();
+    }
+
+    public function postActivation(ConnectionInterface $con = null)
+    {
+        $database = new Database($con->getWrappedConnection());
+
+        $database->insertSql(null, array(__DIR__."/Config/thelia.sql"));
+    }
 }
