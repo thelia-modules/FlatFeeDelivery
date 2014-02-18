@@ -21,36 +21,44 @@
 /*                                                                                   */
 /*************************************************************************************/
 
-namespace FlatFeeDelivery;
+namespace FlatFeeDelivery\Tests;
 
+use FlatFeeDelivery\FlatFeeDelivery;
+use Thelia\Model\Area;
 use Thelia\Model\Country;
-use Thelia\Module\BaseModule;
-use Thelia\Module\DeliveryModuleInterface;
 
 /**
- * Class FlatFeeDelivery
- * @package FlatFeeDelivery
+ * Class FlatFeeDeliveryTest
+ * @package FlatFeeDelivery\Tests
  * @author Thelia <info@thelia.net>
  */
-class FlatFeeDelivery extends BaseModule implements DeliveryModuleInterface
-{
-    /**
-     * calculate and return delivery price
-     *
-     * @param Country $country
-     * @throws \Exception
-     *
-     * @return mixed
-     */
-    public function getPostage(Country $country)
+class FlatFeeDeliveryTest extends \PHPUnit_Framework_TestCase {
+
+    public function testGetPostageWithNullCountry()
     {
-        if($country !== null && $country->getArea() !== null) {
-            $postage = $country->getArea()->getPostage();
-        } else {
-            throw new \InvalidArgumentException("Country or Area should not be null");
-        }
+        $this->setExpectedException("\\InvalidArgumentException");
+        $instance = new FlatFeeDelivery();
 
-        return $postage === null ? 0:$postage;
+        // Area === null
+        $instance->getPostage(new Country());
+
+
     }
+    public function testGetPostage()
+    {
+        $country = new Country();
+        $area = new Area();
 
+        $instance = new FlatFeeDelivery();
+
+        $area->setPostage(2.0);
+        $country->setArea($area);
+        $this->assertEquals($instance->getPostage($country), 2.0);
+
+        $area->setPostage(null);
+        $country->setArea($area);
+        $this->assertEquals($instance->getPostage($country), 0.0);
+
+
+    }
 }
