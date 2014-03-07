@@ -32,8 +32,8 @@ use Thelia\Model\Country;
  * @package FlatFeeDelivery\Tests
  * @author Thelia <info@thelia.net>
  */
-class FlatFeeDeliveryTest extends \PHPUnit_Framework_TestCase {
-
+class FlatFeeDeliveryTest extends \PHPUnit_Framework_TestCase
+{
     public function testGetPostageWithNullCountry()
     {
         $this->setExpectedException("\\InvalidArgumentException");
@@ -41,7 +41,6 @@ class FlatFeeDeliveryTest extends \PHPUnit_Framework_TestCase {
 
         // Area === null
         $instance->getPostage(new Country());
-
 
     }
     public function testGetPostage()
@@ -58,7 +57,6 @@ class FlatFeeDeliveryTest extends \PHPUnit_Framework_TestCase {
         $area->setPostage(null);
         $country->setArea($area);
         $this->assertEquals($instance->getPostage($country), 0.0);
-
 
     }
 }

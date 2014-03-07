@@ -37,19 +37,17 @@ use Thelia\Module\DeliveryModuleInterface;
  */
 class FlatFeeDelivery extends BaseModule implements DeliveryModuleInterface
 {
-
-    const STATUS_SENT=4;
     /**
      * calculate and return delivery price
      *
-     * @param Country $country
+     * @param  Country    $country
      * @throws \Exception
      *
      * @return mixed
      */
     public function getPostage(Country $country)
     {
-        if($country !== null && $country->getArea() !== null) {
+        if ($country !== null && $country->getArea() !== null) {
             $postage = $country->getArea()->getPostage();
         } else {
             throw new \InvalidArgumentException("Country or Area should not be null");
@@ -58,7 +56,8 @@ class FlatFeeDelivery extends BaseModule implements DeliveryModuleInterface
         return $postage === null ? 0:$postage;
     }
 
-    public static function getModCode() {
+    public static function getModCode()
+    {
         return ModuleQuery::create()->findOneByCode("FlatFeeDelivery")->getId();
     }
 
