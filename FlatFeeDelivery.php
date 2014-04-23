@@ -27,6 +27,7 @@ use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleQuery;
+use Thelia\Module\AbstractDeliveryModule;
 use Thelia\Module\BaseModule;
 use Thelia\Module\DeliveryModuleInterface;
 
@@ -35,7 +36,7 @@ use Thelia\Module\DeliveryModuleInterface;
  * @package FlatFeeDelivery
  * @author Thelia <info@thelia.net>
  */
-class FlatFeeDelivery extends BaseModule implements DeliveryModuleInterface
+class FlatFeeDelivery extends AbstractDeliveryModule
 {
     /**
      * calculate and return delivery price
@@ -66,5 +67,21 @@ class FlatFeeDelivery extends BaseModule implements DeliveryModuleInterface
         $database = new Database($con->getWrappedConnection());
 
         $database->insertSql(null, array(__DIR__."/Config/thelia.sql"));
+    }
+
+    /**
+     * This method is called by the Delivery  loop, to check if the current module has to be displayed to the customer.
+     * Override it to implements your delivery rules/
+     *
+     * If you return true, the delivery method will de displayed to the customer
+     * If you return false, the delivery method will not be displayed
+     *
+     * @param Country $country the country to deliver to.
+     *
+     * @return boolean
+     */
+    public function isValidDelivery(Country $country)
+    {
+        return true;
     }
 }
