@@ -1,0 +1,75 @@
+<div class="general-block-decorator">
+    {ifloop rel='area.postage.edit'}
+    <div class="row">
+        <div class="col-md-12 title title-without-tabs">
+            {intl l='Edit your postage' d='flatfeedelivery.bo.default'}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {form name="flat.fee.delivery.postage.update"}
+            <form method="POST" action="{url path="/admin/module/FlatFeeDelivery/postage/update"}" {form_enctype} class="clearfix">
+                {include "includes/inner-form-toolbar.html" hide_flags = 1 close_url={url path='/admin/modules'}}
+                <br/>
+
+                {form_field form=$form field="enabled"}
+                <div class="form-group">
+                    <label class="control-label" for="{$label_attr.for}">
+                        <input type="checkbox" name="{$name}" id="{$label_attr.for}" {if $value}checked{/if} />
+                        {$label}
+                        {form_error form=$form field="enabled"}
+                        <br />
+                        <span class="error">{$message}</span>
+                        {/form_error}
+                    </label>
+                </div>
+                {/form_field}
+
+                <div class="well well-sm">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>{intl l='Area id' d='flatfeedelivery.bo.default'}</th>
+                            <th>{intl l='Name' d='flatfeedelivery.bo.default'}</th>
+                            <th>{intl l='Postage' d='flatfeedelivery.bo.default'}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {loop name="area.postage.edit" type="area" module_id="{$module_id}"}
+                        <tr>
+                            <th>{$ID}</th>
+                            <th>{$NAME}</th>
+                            <th>
+                                {form_hidden_fields form=$form}
+
+                                {form_field form=$form field='area_postage_'|cat:{$ID}}
+                                <label for="{$label_attr.for}" class="control-label">{$label}</label>
+                                <div class="input-group {if $error}has-error{/if}">
+                                    <input type="text" class="form-control" name="{$name}" id="{$label_attr.for}" value="{config key='flatfeedelivery_area_postage_'|cat:{$ID}}">
+                                    <span class="input-group-addon">
+                                        &euro;
+                                    </span>
+                                </div>
+                                {/form_field}
+                            </th>
+                        </tr>
+                        {/loop}
+                        </tbody>
+                    </table>
+                </div>
+                {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
+            {include "includes/inner-form-toolbar.html" hide_flags = 1 close_url={url path='/admin/modules'} page_bottom = 1}
+            </form>
+            {/form}
+        </div>
+    </div>
+    {/ifloop}
+
+    {elseloop rel='area.postage.edit'}
+    <div class="alert alert-info">
+        {intl d='flatfeedelivery.bo.default' l="There's no area associated with the module. You can add one "}
+        <a href="{url path='/admin/configuration/shipping_zones/update/'|cat:{$module_id}}">{intl l='here' d='flatfeedelivery.bo.default'}</a>
+    </div>
+    {/elseloop}
+</div>

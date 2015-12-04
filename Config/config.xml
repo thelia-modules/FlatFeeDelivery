@@ -3,6 +3,7 @@
 <config xmlns="http://thelia.net/schema/dic/config"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
+
     <services>
         <service id="send.flatfeedelivery.mail" class="FlatFeeDelivery\Listener\SendEMail" scope="request">
             <argument type="service" id="thelia.parser" />
@@ -10,4 +11,14 @@
             <tag name="kernel.event_subscriber"/>
         </service>
     </services>
+
+    <hooks>
+        <hook id="flat.fee.delivery.hook" class="FlatFeeDelivery\Hook\HookManager" scope="request">
+            <tag name="hook.event_listener" event="module.configuration" type="back" method="onModuleConfiguration" />
+        </hook>
+    </hooks>
+
+    <forms>
+        <form name="flat.fee.delivery.postage.update" class="FlatFeeDelivery\Form\PostageUpdateForm" />
+    </forms>
 </config>
