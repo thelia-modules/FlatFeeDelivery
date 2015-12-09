@@ -1,43 +1,32 @@
-FlatFeeDelivery module
-======================
-author: Thelia <info@thelia.net>
+# Flat Fee Delivery
 
-Summary
--------
+Add a short description here. You can also add a screenshot if needed.
 
-fr_FR:
-1.  Installation
-2.  Utilisation
+## Installation
 
-en_US:
-1.  Install notes
-2.  How to use
+### Manually
 
+* Copy the module into ```<thelia_root>/local/modules/``` directory and be sure that the name of the module is FlatFeeDelivery.
+* Activate it in your thelia administration panel
 
-fr_FR
------
+### Composer
 
-### Installation
+Add it in your main thelia composer.json file
 
-Pour installer le module forfait, téléchargez l'archive et décompressez la dans <dossier de thelia>/local/modules
+```
+composer require your-vendor/flat-fee-delivery-module:~1.0
+```
 
-### Utilisation
+## Usage
 
-Pour utiliser ce module, allez dans le back-office, onglet Modules, et activez le.
-Allez ensuite sur sa page de configuration pour l'activer dans votre boutique et définir un montant forfaitaire pour des zones de livraison.
-Vous pouvez configurer ce montant dans le back-office, onglet Configuration, en cliquant sur Configuration du transport,
-puis en choisissant la zone désirée, et en entrant le montant du frais de port dans "Frais de livraison".
+First you need to activate the module in the back-office. Then you can add shipping zones with the button "Shipping zones".
+With this module you can use a flat fee delivery for the areas attached to the module. For that you just have to enter the price you want for each area in the module configuration in the back-office.
 
-en_US
------
+## Hook
 
-### Install notes
-
-To install the local pickup module, download the archive and uncompress it in <path to thelia>/local/modules
+This module uses the module configuration hook with the module id as a parameter that is used in the loop.
 
 
-### How to use
+## Loop
 
-To use the module, you first need to activate it in the back-office, tab Modules.
-With this module, you can use a flat fee for your areas.
-Just enter the price you want for each area in the back-office, tab Configuration, in "Shipping configuration".
+This module uses the area loop to list all the areas attached to the module.
