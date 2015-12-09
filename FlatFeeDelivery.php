@@ -1,62 +1,39 @@
 <?php
 /*************************************************************************************/
-/*                                                                                   */
-/*      Thelia	                                                                     */
+/*      This file is part of the Thelia package.                                     */
 /*                                                                                   */
 /*      Copyright (c) OpenStudio                                                     */
-/*      email : info@thelia.net                                                      */
+/*      email : dev@thelia.net                                                       */
 /*      web : http://www.thelia.net                                                  */
 /*                                                                                   */
-/*      This program is free software; you can redistribute it and/or modify         */
-/*      it under the terms of the GNU General Public License as published by         */
-/*      the Free Software Foundation; either version 3 of the License                */
-/*                                                                                   */
-/*      This program is distributed in the hope that it will be useful,              */
-/*      but WITHOUT ANY WARRANTY; without even the implied warranty of               */
-/*      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                */
-/*      GNU General Public License for more details.                                 */
-/*                                                                                   */
-/*      You should have received a copy of the GNU General Public License            */
-/*	    along with this program. If not, see <http://www.gnu.org/licenses/>.         */
-/*                                                                                   */
+/*      For the full copyright and license information, please view the LICENSE.txt  */
+/*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
 namespace FlatFeeDelivery;
 
+use FlatFeeDelivery\Model\Config\FlatFeeDeliveryConfigValue;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
+use Thelia\Model\ConfigQuery;
 use Thelia\Model\Country;
 use Thelia\Model\ModuleQuery;
+use Thelia\Model\OrderPostage;
 use Thelia\Module\AbstractDeliveryModule;
-use Thelia\Module\BaseModule;
-use Thelia\Module\DeliveryModuleInterface;
+use Thelia\Module\Exception\DeliveryException;
 
 /**
  * Class FlatFeeDelivery
  * @package FlatFeeDelivery
- * @author Thelia <info@thelia.net>
+ * @author Thomas Arnaud <tarnaud@openstudio.fr>
  */
 class FlatFeeDelivery extends AbstractDeliveryModule
 {
+    const DOMAIN_NAME = "flatfeedelivery";
+
     /**
-     * calculate and return delivery price
-     *
-     * @param  Country    $country
-     * @throws \Exception
-     *
-     * @return mixed
+     * @return int
      */
-    public function getPostage(Country $country)
-    {
-        if ($country !== null && $country->getArea() !== null) {
-            $postage = $country->getArea()->getPostage();
-        } else {
-            throw new \InvalidArgumentException("Country or Area should not be null");
-        }
-
-        return $postage === null ? 0:$postage;
-    }
-
     public static function getModCode()
     {
         return ModuleQuery::create()->findOneByCode("FlatFeeDelivery")->getId();
@@ -64,13 +41,22 @@ class FlatFeeDelivery extends AbstractDeliveryModule
 
     public function postActivation(ConnectionInterface $con = null)
     {
-        $database = new Database($con->getWrappedConnection());
+        $database = new Database($con);
+
+        $this->initializeConfig();
 
         $database->insertSql(null, array(__DIR__."/Config/thelia.sql"));
     }
 
+    protected function initializeConfig()
+    {
+        if (null === FlatFeeDelivery::getConfigValue(FlatFeeDeliveryConfigValue::ENABLED)) {
+            FlatFeeDelivery::setConfigValue(FlatFeeDeliveryConfigValue::ENABLED, 0);
+        }
+    }
+
     /**
-     * This method is called by the Delivery  loop, to check if the current module has to be displayed to the customer.
+     * This method is called by the Delivery loop, to check if the current module has to be displayed to the customer.
      * Override it to implements your delivery rules/
      *
      * If you return true, the delivery method will de displayed to the customer
@@ -82,6 +68,47 @@ class FlatFeeDelivery extends AbstractDeliveryModule
      */
     public function isValidDelivery(Country $country)
     {
-        return true;
+        $areas = $country->getAreas();
+        $postages = [];
+        $isPostageNotNull = false;
+
+        foreach($areas as $area) {
+            $postages[] = ConfigQuery::read("flatfeedelivery_" . 'area_postage_' . $area->getId(), "");
+
+            foreach($postages as $postage) {
+                if($postage != '') {
+                    $isPostageNotNull = true;
+                }
+            }
+        }
+
+        if (0 === intval(self::getConfigValue(FLatFeeDeliveryConfigValue::ENABLED))) {
+            return false;
+        }
+
+        return $isPostageNotNull;
+    }
+
+    /**
+     * Calculate and return delivery price in the shop's default currency
+     *
+     * @param Country $country the country to deliver to.
+     *
+     * @return OrderPostage|float             the delivery price
+     * @throws DeliveryException if the postage price cannot be calculated.
+     */
+    public function getPostage(Country $country)
+    {
+        $areas = $country->getAreas();
+        $postages = [];
+
+        foreach($areas as $area) {
+            $postage = ConfigQuery::read("flatfeedelivery_" . 'area_postage_' . $area->getId(), "");
+            if($postage != '') {
+                $postages[] = $postage;
+            }
+        }
+
+        return min($postages);
     }
 }
