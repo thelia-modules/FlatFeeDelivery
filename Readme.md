@@ -28,6 +28,10 @@ Ce dernier vous permet d'utiliser un montant forfaitaire pour des zones de livra
 Vous pouvez configurer ce montant dans le back-office, onglet Configuration, en cliquant sur Configuration du transport,
 puis en choisissant la zone désirée, et en entrant le montant du frais de port dans "Frais de livraison".
 
+### Mail de confirmation d'envoi
+
+Un mail de confirmation d'envoi de commande (Notification d'envoi forfaitaire) est expédié au client lorsque la commande passe à l'état envoyé.
+
 en_US
 -----
 
@@ -41,3 +45,7 @@ To install the local pickup module, download the archive and uncompress it in <p
 To use the module, you first need to activate it in the back-office, tab Modules.
 With this module, you can use a flat fee for your areas.
 Just enter the price you want for each area in the back-office, tab Configuration, in "Shipping configuration".
+
+### Shipping confirmation email
+
+A shipping confirmation email (Flat rate shipping notification) is send to the customer when the order reaches the 'sent' status.

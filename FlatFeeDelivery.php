@@ -26,10 +26,10 @@ namespace FlatFeeDelivery;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Thelia\Install\Database;
 use Thelia\Model\Country;
+use Thelia\Model\Message;
+use Thelia\Model\MessageQuery;
 use Thelia\Model\ModuleQuery;
 use Thelia\Module\AbstractDeliveryModule;
-use Thelia\Module\BaseModule;
-use Thelia\Module\DeliveryModuleInterface;
 
 /**
  * Class FlatFeeDelivery
@@ -38,6 +38,12 @@ use Thelia\Module\DeliveryModuleInterface;
  */
 class FlatFeeDelivery extends AbstractDeliveryModule
 {
+
+    /**
+     * The shipping confirmation message identifier
+     */
+    const CONFIRMATION_MESSAGE_NAME = 'order confirmation_flatfeedelivery';
+
     /**
      * calculate and return delivery price
      *
@@ -48,25 +54,13 @@ class FlatFeeDelivery extends AbstractDeliveryModule
      */
     public function getPostage(Country $country)
     {
-        if ($country !== null && $country->getArea() !== null) {
-            $postage = $country->getArea()->getPostage();
+        if (null !== $area = $this->getAreaForCountry($country)) {
+            $postage = $area->getPostage();
         } else {
             throw new \InvalidArgumentException("Country or Area should not be null");
         }
 
-        return $postage === null ? 0:$postage;
-    }
-
-    public static function getModCode()
-    {
-        return ModuleQuery::create()->findOneByCode("FlatFeeDelivery")->getId();
-    }
-
-    public function postActivation(ConnectionInterface $con = null)
-    {
-        $database = new Database($con->getWrappedConnection());
-
-        $database->insertSql(null, array(__DIR__."/Config/thelia.sql"));
+        return $postage === null ? 0 : $postage;
     }
 
     /**
@@ -82,6 +76,43 @@ class FlatFeeDelivery extends AbstractDeliveryModule
      */
     public function isValidDelivery(Country $country)
     {
-        return true;
+        // We should find an area for the country.
+        return null !== $this->getAreaForCountry($country);
+    }
+
+    public function postActivation(ConnectionInterface $con = null)
+    {
+        // Create payment confirmation message from templates, if not already defined
+        $email_templates_dir = __DIR__.DS.'I18n'.DS.'email-templates'.DS;
+
+        if (null === MessageQuery::create()->findOneByName(self::CONFIRMATION_MESSAGE_NAME)) {
+            $message = new Message();
+
+            $message
+                ->setName(self::CONFIRMATION_MESSAGE_NAME)
+
+                ->setLocale('en_US')
+                ->setTitle('Flat rate shipping notification')
+                ->setSubject('Payment of order {$order_ref}')
+                ->setHtmlMessage(file_get_contents($email_templates_dir.'en.html'))
+                ->setTextMessage(file_get_contents($email_templates_dir.'en.txt'))
+
+                ->setLocale('fr_FR')
+                ->setTitle('Notification d\'envoi forfaitaire')
+                ->setSubject('Confirmation du paiement de votre commande {$order_ref}')
+                ->setHtmlMessage(file_get_contents($email_templates_dir.'fr.html'))
+                ->setTextMessage(file_get_contents($email_templates_dir.'fr.txt'))
+
+                ->save()
+            ;
+        }
+    }
+
+    public function destroy(ConnectionInterface $con = null, $deleteModuleData = false)
+    {
+        // Delete our message
+        if (null !== $message = MessageQuery::create()->findOneByName(self::CONFIRMATION_MESSAGE_NAME)) {
+            $message->delete($con);
+        }
     }
 }
