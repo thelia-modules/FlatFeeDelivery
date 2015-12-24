@@ -93,13 +93,13 @@ class FlatFeeDelivery extends AbstractDeliveryModule
 
                 ->setLocale('en_US')
                 ->setTitle('Flat rate shipping notification')
-                ->setSubject('Payment of order {$order_ref}')
+                ->setSubject('Your order {$order_ref} has been shipped')
                 ->setHtmlMessage(file_get_contents($email_templates_dir.'en.html'))
                 ->setTextMessage(file_get_contents($email_templates_dir.'en.txt'))
 
                 ->setLocale('fr_FR')
                 ->setTitle('Notification d\'envoi forfaitaire')
-                ->setSubject('Confirmation du paiement de votre commande {$order_ref}')
+                ->setSubject('Votre commande {$order_ref} a été expédiée')
                 ->setHtmlMessage(file_get_contents($email_templates_dir.'fr.html'))
                 ->setTextMessage(file_get_contents($email_templates_dir.'fr.txt'))
 

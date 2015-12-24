@@ -1,6 +1,6 @@
 Cher client,
 
-Ce message confirme que votre commande {$order_ref} sur {config key="url_site"} a été expédiée.
+Ce message confirme que votre commande {$order_ref} sur {config key="store_name"} a été expédiée.
 
 Merci encore pour votre achat !
 
