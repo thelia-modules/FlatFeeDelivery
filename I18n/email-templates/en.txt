@@ -1,0 +1,7 @@
+Dear customer,
+
+Your order {$order_ref} in {config key="store_name"} has been shipped.
+
+Thank you again for your purchase.
+
+The {config key="store_name"} team.
