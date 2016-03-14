@@ -48,7 +48,7 @@ class EventManager extends BaseAction implements EventSubscriberInterface
      */
     public function sendDeliveryNotification(OrderEvent $event)
     {
-        if ($event->getOrder()->getDeliveryModuleId() === FlatFeeDelivery::getModuleCode()) {
+        if ($event->getOrder()->getDeliveryModuleId() === FlatFeeDelivery::getModuleId()) {
             $order = $event->getOrder();
 
             if ($order->isSent()) {
