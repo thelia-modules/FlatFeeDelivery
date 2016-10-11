@@ -42,7 +42,7 @@ class FlatFeeDelivery extends AbstractDeliveryModule
     /**
      * The shipping confirmation message identifier
      */
-    const CONFIRMATION_MESSAGE_NAME = 'order confirmation_flatfeedelivery';
+    const CONFIRMATION_MESSAGE_NAME = 'order_confirmation_flatfeedelivery';
 
     /**
      * calculate and return delivery price
