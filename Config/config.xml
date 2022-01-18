@@ -3,12 +3,6 @@
 <config xmlns="http://thelia.net/schema/dic/config"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
-    <services>
-        <service id="flatfeedelivery.send.mail" class="FlatFeeDelivery\Listener\EventManager" scope="request">
-            <argument type="service" id="mailer"/>
-            <tag name="kernel.event_subscriber"/>
-        </service>
-    </services>
 
     <hooks>
         <hook id="flatfeedelivery.shippingprice.hook" class="FlatFeeDelivery\Hook\HookManager" scope="request">
